@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Realms — Prototype</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(#87ceeb,#d9f5ff);color:#172033}
+  header{background:#26345d;color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:15px;position:sticky;top:0;z-index:5}
+  h1{margin:0;font-size:24px}
+  .resources{display:flex;gap:10px;flex-wrap:wrap}
+  .res{background:#ffffff1c;border:1px solid #ffffff33;padding:7px 10px;border-radius:12px}
+  main{max-width:1200px;margin:auto;padding:18px}
+  .island{min-height:330px;border-radius:30px;background:linear-gradient(180deg,#7ed957 0 55%,#58b63f 55%);border:8px solid #4a9f37;position:relative;overflow:hidden;box-shadow:0 12px 30px #52708a55}
+  .water{position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,#ffffff33 0 2px,transparent 3px);opacity:.6}
+  .island-title{position:relative;text-align:center;color:white;text-shadow:0 2px 4px #285b25;margin:15px}
+  .habitat{position:absolute;background:#b97b4b;border:5px solid #7b4c2d;border-radius:20px;width:155px;height:105px;padding:8px;text-align:center;color:white;box-shadow:0 8px 12px #0003}
+  .h1{left:8%;top:35%}.h2{right:8%;top:35%}
+  .dragon-visual{font-size:42px}
+  .panels{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:15px;margin-top:18px}
+  .panel{background:#ffffffeb;border-radius:18px;padding:16px;box-shadow:0 6px 18px #29415c22}
+  .panel h2{margin:0 0 10px;font-size:18px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .card{border:2px solid #dce4ef;border-radius:15px;padding:10px;background:#f9fbff}
+  button{border:0;border-radius:10px;padding:9px 12px;background:#526df5;color:white;font-weight:bold;cursor:pointer;margin:3px}
+  button:hover{filter:brightness(1.08)}
+  button:disabled{background:#aab3c7;cursor:not-allowed}
+  .danger{background:#e85b68}.green{background:#35a86b}.gold{background:#e0a82e;color:#332500}
+  .bar{height:10px;background:#e5e9f0;border-radius:10px;overflow:hidden;margin:5px 0}
+  .fill{height:100%;background:#4caf50}
+  .log{height:130px;overflow:auto;background:#101827;color:#d7e4ff;border-radius:10px;padding:9px;font-family:monospace;font-size:12px}
+  .egg{font-size:48px;text-align:center}
+  .battle{background:linear-gradient(135deg,#3b255f,#17264f);color:white;border-radius:18px;padding:16px}
+  .battle-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .fighter{background:#ffffff16;border-radius:15px;padding:12px;text-align:center}
+  .hp{background:#311c2a;height:13px;border-radius:10px;overflow:hidden}.hp span{display:block;height:100%;background:#55d66b}
+  .small{font-size:12px;color:#64748b}
+  @media(max-width:850px){.panels{grid-template-columns:1fr}.island{height:330px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🐉 Dragon Realms — Prototype</h1>
+  <div class="resources">
+    <div class="res">💰 <span id="gold">500</span></div>
+    <div class="res">🍖 <span id="food">300</span></div>
+    <div class="res">💎 <span id="gems">20</span></div>
+  </div>
+</header>
+
+<main>
+  <section class="island">
+    <div class="water"></div>
+    <h2 class="island-title">🏝️ Île des Dragons</h2>
+    <div class="habitat h1">🔥 Habitat Feu<br><div class="dragon-visual">🐉</div><small>Capacité 2</small></div>
+    <div class="habitat h2">🌊 Habitat Eau<br><div class="dragon-visual">🐲</div><small>Capacité 2</small></div>
+  </section>
+
+  <div class="panels">
+    <section class="panel">
+      <h2>🐲 Mes dragons</h2>
+      <div id="dragons" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🥚 Élevage</h2>
+      <div class="egg" id="egg">🥚</div>
+      <p id="breedText">Choisis deux dragons compatibles.</p>
+      <select id="parentA"></select>
+      <select id="parentB"></select><br>
+      <button class="green" onclick="breed()">❤️ Lancer l'élevage</button>
+      <div id="timer" class="small"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🌾 Nourriture</h2>
+      <p>Achète 100 nourriture pour 50 or.</p>
+      <button class="gold" onclick="buyFood()">🛒 Acheter</button>
+      <p class="small">Nourris un dragon pour augmenter son niveau.</p>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:15px">
+    <h2>⚔️ Arène</h2>
+    <div class="battle-grid">
+      <div class="fighter">
+        <div>Ton dragon</div>
+        <div id="playerBattleEmoji" style="font-size:60px">🐉</div>
+        <b id="playerBattleName">—</b>
+        <div class="hp"><span id="playerHp" style="width:100%"></span></div>
+        <div id="playerHpText">100 / 100</div>
+        <button onclick="attack()">⚔️ Attaquer</button>
+        <button class="green" onclick="healBattle()">✨ Compétence</button>
+      </div>
+      <div class="fighter">
+        <div>Adversaire sauvage</div>
+        <div style="font-size:60px">👹</div>
+        <b id="enemyName">Drake sauvage</b>
+        <div class="hp"><span id="enemyHp" style="width:100%"></span></div>
+        <div id="enemyHpText">100 / 100</div>
+        <button class="danger" onclick="startBattle()">🔄 Nouveau combat</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:15px">
+    <h2>📜 Journal</h2>
+    <div id="log" class="log"></div>
+  </section>
+</main>
+
+<script>
+let state = {
+  gold:500, food:300, gems:20,
+  dragons:[
+    {id:1,name:"Flammy",emoji:"🐉",element:"Feu",level:1,hp:100,maxHp:100,attack:18,price:100},
+    {id:2,name:"Aquary",emoji:"🐲",element:"Eau",level:1,hp:100,maxHp:100,attack:16,price:100}
+  ],
+  eggReady:false, breeding:false, breedEnd:0,
+  enemyHp:100, playerHp:100
+};
+
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem("dragonRealms",JSON.stringify(state))}
+function load(){try{let s=JSON.parse(localStorage.getItem("dragonRealms"));if(s)state=s}catch(e){}}
+function log(t){$("log").innerHTML="• "+new Date().toLocaleTimeString()+" — "+t+"<br>"+$("log").innerHTML}
+function render(){
+  state.dragons.forEach(d=>{ if(!d.price) d.price=100; });
+  $("gold").textContent=state.gold; $("food").textContent=state.food; $("gems").textContent=state.gems;
+  $("dragons").innerHTML=state.dragons.map(d=>`
+    <div class="card">
+      <div style="font-size:42px">${d.emoji}</div><b>${d.name}</b>
+      <div>${d.element} · Niveau ${d.level}</div>
+      <div>💰 Valeur : <b>${Math.round(d.price)}</b></div>
+      <div class="bar"><div class="fill" style="width:${Math.min(100,d.hp/d.maxHp*100)}%"></div></div>
+      <button onclick="feed(${d.id})">🍖 Nourrir (20)</button>
+      <button onclick="selectBattle(${d.id})">⚔️ Choisir</button>
+    </div>`).join("");
+  const opts=state.dragons.map(d=>`<option value="${d.id}">${d.name} (${d.element})</option>`).join("");
+  $("parentA").innerHTML=opts;$("parentB").innerHTML=opts;
+  $("timer").textContent=state.breeding ? (state.eggReady ? "🎉 L'œuf est prêt !" : "⏳ L'œuf est en incubation...") : "";
+  $("egg").textContent=state.eggReady?"🐣":"🥚";
+  $("breedText").textContent=state.eggReady?"Clique pour faire éclore ton dragon !":"Choisis deux dragons compatibles.";
+  if(state.eggReady){$("breedText").innerHTML='<button class="green" onclick="hatch()">🐣 Faire éclore</button>'}
+  updateBattleUI(); save();
+}
+function buyFood(){if(state.gold>=50){state.gold-=50;state.food+=100;log("Tu as acheté 100 nourriture.");render()}else log("Pas assez d'or.")}
+function playFeedSound(){
+  // Son original de nourrissage, créé avec Web Audio.
+  // Il est volontairement différent du son propriétaire de Dragon City.
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    const ctx=new C();
+    const now=ctx.currentTime;
+    const notes=[523.25,659.25,783.99];
+    notes.forEach((f,i)=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,now+i*0.07);
+      g.gain.exponentialRampToValueAtTime(0.16,now+i*0.07+0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001,now+i*0.07+0.16);
+      o.connect(g);g.connect(ctx.destination);
+      o.start(now+i*0.07);o.stop(now+i*0.07+0.18);
+    });
+  }catch(e){}
+}
+function feed(id){
+  let d=state.dragons.find(x=>x.id===id);
+  if(state.food<20)return log("Pas assez de nourriture.");
+  state.food-=20;
+  d.level++;
+  d.maxHp+=12; d.hp=d.maxHp; d.attack+=3;
+  d.price=Math.round(d.price*2.5);
+  playFeedSound();
+  log(d.name+" est nourri ! Niveau "+d.level+" — sa valeur est maintenant de "+d.price+" or.");
+  render();
+}
+function breed(){
+  if(state.breeding&&!state.eggReady)return log("Un œuf est déjà en incubation.");
+  let a=state.dragons.find(d=>d.id==$("parentA").value),b=state.dragons.find(d=>d.id==$("parentB").value);
+  if(!a||!b||a.id===b.id)return log("Il faut deux dragons différents.");
+  state.breeding=true;state.eggReady=false;state.breedEnd=Date.now()+15000;
+  log(a.name+" ❤️ "+b.name+" : un œuf va bientôt arriver !");
+  render();
+}
+function hatch(){
+  let pool=[
+    {name:"Flamqua",emoji:"🐲",element:"Feu/Eau",attack:20},
+    {name:"Terraflam",emoji:"🐉",element:"Feu/Terre",attack:21},
+    {name:"Floragon",emoji:"🐉",element:"Nature",attack:19},
+    {name:"Voltix",emoji:"🐲",element:"Foudre",attack:22}
+  ];
+  let p=pool[Math.floor(Math.random()*pool.length)];
+  state.dragons.push({id:Date.now(),name:p.name,emoji:p.emoji,element:p.element,level:1,hp:110,maxHp:110,attack:p.attack,price:100});
+  state.breeding=false;state.eggReady=false;log("🎉 Éclosion ! Tu as obtenu "+p.name+" !");
+  render();
+}
+function selectBattle(id){
+  let d=state.dragons.find(x=>x.id===id);
+  state.playerHp=d.hp;state.selected=id;log(d.name+" est prêt pour le combat !");render();
+}
+function startBattle(){
+  state.enemyHp=100;state.playerHp=100;
+  const names=["Drake sauvage","Golem dragon","Raptor infernal","Dragon des brumes"];
+  $("enemyName").textContent=names[Math.floor(Math.random()*names.length)];
+  log("Un nouvel adversaire apparaît !");
+  render();
+}
+function attack(){
+  let d=state.dragons.find(x=>x.id===state.selected)||state.dragons[0];
+  let dmg=d.attack+Math.floor(Math.random()*9);
+  state.enemyHp=Math.max(0,state.enemyHp-dmg); log(d.name+" inflige "+dmg+" dégâts.");
+  if(state.enemyHp<=0){state.gold+=100;state.food+=30;log("🏆 Victoire ! +100 or, +30 nourriture.");startBattle();return}
+  let edmg=8+Math.floor(Math.random()*8);state.playerHp=Math.max(0,state.playerHp-edmg);log("L'ennemi inflige "+edmg+" dégâts.");
+  if(state.playerHp<=0){log("💥 Ton dragon est vaincu. Essaie encore !");state.playerHp=100}
+  render();
+}
+function healBattle(){
+  let d=state.dragons.find(x=>x.id===state.selected)||state.dragons[0];
+  if(state.food<10)return log("Pas assez de nourriture pour utiliser la compétence.");
+  state.food-=10;state.playerHp=Math.min(100,state.playerHp+25);log(d.name+" récupère 25 PV.");render();
+}
+function updateBattleUI(){
+  let d=state.dragons.find(x=>x.id===state.selected)||state.dragons[0];
+  $("playerBattleEmoji").textContent=d.emoji;$("playerBattleName").textContent=d.name;
+  $("playerHp").style.width=state.playerHp+"%";$("enemyHp").style.width=state.enemyHp+"%";
+  $("playerHpText").textContent=Math.round(state.playerHp)+" / 100";
+  $("enemyHpText").textContent=Math.round(state.enemyHp)+" / 100";
+}
+load();
+if(!state.selected)state.selected=state.dragons[0].id;
+render();startBattle();
+setInterval(()=>{if(state.breeding&&!state.eggReady&&Date.now()>=state.breedEnd){state.eggReady=true;log("🥚 L'œuf est prêt à éclore !");render()}},500);
+</script>
+</body>
+</html>
