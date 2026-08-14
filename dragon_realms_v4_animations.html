@@ -1,0 +1,81 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dragon Realms V3</title>
+<style>
+body{margin:0;font-family:Arial;background:linear-gradient(#8bd9f3,#e9faff);color:#172033}header{background:#26345d;color:#fff;padding:14px;display:flex;justify-content:space-between;position:sticky;top:0;z-index:3}main{max-width:1200px;margin:auto;padding:15px}.island{height:280px;border:8px solid #489637;border-radius:30px;background:linear-gradient(#7ee05a 0 55%,#55b73e 55%);position:relative}.island h2{text-align:center;color:#fff}.hab{position:absolute;background:#b97b4b;color:#fff;border:5px solid #7b4c2d;border-radius:18px;padding:8px;text-align:center;width:160px}.a{left:8%;top:35%}.b{right:8%;top:35%}.c{left:42%;bottom:8%}.tabs{margin-top:12px}button{border:0;border-radius:10px;padding:9px;margin:3px;background:#526df5;color:#fff;font-weight:bold;cursor:pointer}.green{background:#35a86b}.gold{background:#e0a82e;color:#332500}.red{background:#df5d68}.purple{background:#7d55c7}.panel{background:#fffffff0;border-radius:18px;padding:15px;margin-top:12px}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px}.card{border:2px solid #dce4ef;border-radius:14px;padding:9px;background:#f9fbff}.icon{font-size:40px}.bar,.hp{height:10px;background:#ddd;border-radius:9px;overflow:hidden}.fill,.hp span{display:block;height:100%;background:#4caf50}.egg{text-align:center;font-size:60px}.battle{background:linear-gradient(135deg,#3d2563,#17264f);color:#fff;border-radius:18px;padding:15px}.battlegrid{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px}.fighter{background:#ffffff16;border-radius:14px;padding:12px;text-align:center}.turn{outline:3px solid #ffd45a;box-shadow:0 0 18px #ffd45a55}.hidden{display:none}.log{height:110px;overflow:auto;background:#101827;color:#d7e4ff;padding:9px;font:12px monospace}@media(max-width:850px){.grid,.battlegrid{grid-template-columns:1fr}}
+
+@keyframes floatDragon{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes flap{0%,100%{transform:rotate(10deg)}50%{transform:rotate(-18deg)}}
+@keyframes attack{0%{transform:translateX(0)}40%{transform:translateX(45px) scale(1.08)}100%{transform:translateX(0)}}
+@keyframes enemyAttack{0%{transform:translateX(0)}40%{transform:translateX(-45px) scale(1.08)}100%{transform:translateX(0)}}
+@keyframes hit{0%{filter:brightness(3)}100%{filter:brightness(1)}}
+@keyframes fire{0%,100%{transform:scale(.8)}50%{transform:scale(1.25)}}
+.dragonArt{width:125px;height:120px;margin:auto;position:relative;animation:floatDragon 2s ease-in-out infinite}
+.dragonBody{position:absolute;left:35px;top:42px;width:65px;height:55px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:inset -8px -7px #0002}
+.dragonHead{position:absolute;left:67px;top:20px;width:48px;height:45px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c2));z-index:3}
+.eye{position:absolute;right:9px;top:13px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #222}
+.wing{position:absolute;top:34px;width:48px;height:60px;background:linear-gradient(135deg,var(--c2),var(--c1));clip-path:polygon(0 100%,15% 0,100% 35%,70% 55%,100% 100%,40% 75%);transform-origin:bottom;animation:flap .7s infinite}
+.wl{left:2px}.wr{right:2px;transform:scaleX(-1)}
+.tail{position:absolute;left:12px;top:65px;width:60px;height:25px;border-bottom:10px solid var(--c2);border-radius:50%;z-index:0}
+.leg{position:absolute;top:85px;width:18px;height:28px;border-radius:10px;background:var(--c2);z-index:2}.l1{left:42px}.l2{left:77px}
+.horn{position:absolute;top:-16px;width:11px;height:23px;background:#f4d48b;clip-path:polygon(50% 0,100% 100%,0 100%)}.h1{left:9px}.h2{left:27px;transform:rotate(12deg)}
+.fireFx{position:absolute;right:0;top:48px;font-size:25px;animation:fire .5s infinite}
+.animAttack{animation:attack .6s}.animEnemy{animation:enemyAttack .6s}.animHit{animation:hit .3s}
+</style></head><body>
+<header><b>🐉 Dragon Realms — V3</b><span>💰 <i id="gold"></i>　🍖 <i id="food"></i>　💎 <i id="gems"></i>　🏆 <i id="trophies"></i></span></header><main>
+<div class="island"><h2>🏝️ Île des Dragons</h2><div class="hab a">🔥 Habitat Feu<br>🐉<br>Capacité 2</div><div class="hab b">🌊 Habitat Eau<br>🐲<br>Capacité 2</div><div class="hab c">🌿 Habitat Nature<br>🌱<br>Capacité 2</div></div>
+<div class="tabs"><button onclick="show('home',this)">🏠 Île</button><button onclick="show('collection',this)">📚 Collection</button><button onclick="show('arena',this)">⚔️ Arène</button></div>
+<section id="home"><div class="grid"><div class="panel"><h2>🐲 Mes dragons</h2><div id="dragons" class="cards"></div></div><div class="panel"><h2>🥚 Élevage</h2><div id="egg" class="egg">🥚</div><p id="breedInfo">Choisis deux dragons.</p><select id="pa"></select><select id="pb"></select><br><button class="green" onclick="breed()">❤️ Élever</button><div id="hatch"></div><hr><button class="gold" onclick="buyFood()">🛒 100 nourriture / 50 or</button><button onclick="build()">🏗️ Habitat / 300 or</button></div></div></section>
+<section id="collection" class="hidden"><div class="panel"><h2>📚 Collection</h2><div id="catalog" class="cards"></div></div></section>
+<section id="arena" class="hidden"><div class="battle"><h2>⚔️ Combat V3 — chacun attaque à son tour</h2><p>Ton équipe possède 3 dragons. <b>Chaque dragon joue son propre tour</b> et possède <b>2 attaques différentes</b>. Après chaque attaque, l'ennemi riposte.</p>
+<div class="battlegrid"><div class="fighter"><h3>🐉 Ton équipe</h3><div id="team"></div></div>
+<div class="fighter"><div id="enemyIcon"></div><h3 id="enemyName"></h3><div class="hp"><span id="enemyBar"></span></div><p id="enemyText"></p><div id="turnBox"></div><button class="red" onclick="newBattle()">🔄 Nouveau combat</button></div>
+<div class="fighter"><h3>Dragon du tour</h3><div id="activeIcon"></div><b id="activeName"></b><p id="activeElement"></p><div class="hp"><span id="activeBar"></span></div><p id="activeText"></p></div></div></div></section>
+<div class="panel"><h2>📜 Journal</h2><div id="log" class="log"></div></div></main>
+<script>
+const C=[["Flammy","Feu","🐉",18,100],["Aquary","Eau","🐲",16,100],["Terra","Terre","🐊",17,110],["Floragon","Nature","🌿",19,120],["Voltix","Foudre","⚡",22,150],["Glacium","Glace","❄️",21,160],["Emberia","Feu/Nature","🦎",23,200],["Hydragon","Eau/Terre","🐉",24,220],["Stormy","Foudre/Eau","🌩️",26,260],["Inferno","Feu/Foudre","🔥",28,300],["Mystica","Arcane","🐲",30,400],["Dracombre","Ombre","🐉",33,500]];
+function make(id,i){let c=C[i];return{id,name:c[0],el:c[1],icon:c[2],atk:c[3],price:c[4],level:1,maxHp:100,hp:100}}
+let s={gold:750,food:800,gems:20,trophies:0,buildings:3,dragons:[make(1,0),make(2,1),make(3,2)],team:[1,2,3],turn:0,teamHp:{1:100,2:100,3:100},enemyHp:150,enemyMax:150,over:false,waiting:false};
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem("DRv3",JSON.stringify(s))}function log(t){$("log").innerHTML="• "+new Date().toLocaleTimeString()+" — "+t+"<br>"+$("log").innerHTML}
+
+function dragonArt(d){
+  let e=(d.el||"").toLowerCase(),c1="#e85b3f",c2="#ffb347";
+  if(e.includes("eau"))[c1,c2]=["#238bd2","#70dcff"];
+  else if(e.includes("terre"))[c1,c2]=["#79583c","#c49a64"];
+  else if(e.includes("nature"))[c1,c2]=["#35a56b","#a4df62"];
+  else if(e.includes("foudre"))[c1,c2]=["#6655d9","#f5df4d"];
+  else if(e.includes("glace"))[c1,c2]=["#62cfee","#e1fbff"];
+  else if(e.includes("ombre"))[c1,c2]=["#503c6e","#151522"];
+  else if(e.includes("arcane"))[c1,c2]=["#b457e8","#5b28a8"];
+  return `<div class="dragonArt" style="--c1:${c1};--c2:${c2}">
+    <div class="wing wl"></div><div class="wing wr"></div><div class="tail"></div>
+    <div class="dragonBody"></div><div class="leg l1"></div><div class="leg l2"></div>
+    <div class="dragonHead"><div class="horn h1"></div><div class="horn h2"></div><div class="eye"></div></div>
+    ${e.includes("feu")?'<div class="fireFx">🔥</div>':""}
+  </div>`;
+}
+function render(){
+$("gold").textContent=s.gold;$("food").textContent=s.food;$("gems").textContent=s.gems;$("trophies").textContent=s.trophies;
+$("dragons").innerHTML=s.dragons.map(d=>`<div class=card><div>${dragonArt(d)}</div><b>${d.name}</b><br>${d.el} · Niveau ${d.level}<br>💰 Valeur <b>${Math.round(d.price)}</b><div class=bar><div class=fill style="width:${d.hp/d.maxHp*100}%"></div></div><button onclick="feed(${d.id})">🍖 Nourrir (20)</button></div>`).join("");
+let opts=s.dragons.map(d=>`<option value="${d.id}">${d.name}</option>`).join("");$("pa").innerHTML=opts;$("pb").innerHTML=opts;
+$("catalog").innerHTML=C.map(c=>`<div class=card><div class=icon>${c[2]}</div><b>${c[0]}</b><br>${c[1]} · ⚔️ ${c[3]} · 💰 ${c[4]}</div>`).join("");
+let living=s.team.filter(id=>(s.teamHp[id]??0)>0);$("team").innerHTML=s.team.map((id,i)=>{let d=s.dragons.find(x=>x.id==id);if(!d)return"";let active=i===s.turn&&!s.over;let hp=s.teamHp[id]??100;return `<div class="card ${active?'turn':''}"><div>${dragonArt(d)}</div><b>${d.name}</b><br>${d.el}<div class=hp><span style="width:${hp}%"></span></div>${Math.round(hp)}/100 PV</div>`}).join("");
+let id=s.team[s.turn%s.team.length],d=s.dragons.find(x=>x.id==id);if(d){$("activeIcon").innerHTML=dragonArt(d);$("activeName").textContent=d.name;$("activeElement").textContent="Élément : "+d.el+" · ⚔️ "+d.atk;$("activeBar").style.width=(s.teamHp[id]??100)+"%";$("activeText").textContent=Math.round(s.teamHp[id]??100)+" / 100 PV";}
+$("enemyIcon").innerHTML=dragonArt({el:s.enemyElement||"Ombre"});$("enemyName").textContent=s.enemyName||"Dragon sauvage";$("enemyBar").style.width=s.enemyHp/s.enemyMax*100+"%";$("enemyText").textContent=Math.round(s.enemyHp)+" / "+s.enemyMax+" PV";
+if(s.over)$("turnBox").innerHTML="<b>🏁 Combat terminé</b>";else if(s.waiting)$("turnBox").innerHTML="<b>⏳ L'ennemi riposte...</b>";else $("turnBox").innerHTML=`<p><b>Tour de ${d.name}</b></p><button onclick="attack(1)">⚔️ ${d.name} — Morsure</button><button class=green onclick="attack(1.7)">🔥 ${d.name} — Souffle</button>`;
+if(s.breedEnd&&!s.egg&&Date.now()>=s.breedEnd){s.egg=true;s.breedEnd=0;log("🥚 L'œuf est prêt !")}if(s.egg){$("egg").textContent="🐣";$("breedInfo").textContent="Œuf prêt !";$("hatch").innerHTML='<button class=green onclick="hatch()">🐣 Faire éclore</button>'}else{$("egg").textContent="🥚";$("hatch").innerHTML="";$("breedInfo").textContent=s.breedEnd?"⏳ Incubation...":"Choisis deux dragons."}save()}
+function feed(id){let d=s.dragons.find(x=>x.id==id);if(s.food<20)return log("Pas assez de nourriture.");s.food-=20;d.level++;d.maxHp+=12;d.hp=d.maxHp;d.atk+=3;d.price*=2.5;log(d.name+" est nourri : valeur ×2,5 !");render()}
+function buyFood(){if(s.gold<50)return log("Pas assez d'or.");s.gold-=50;s.food+=100;log("+100 nourriture.");render()}
+function build(){if(s.gold<300)return log("Pas assez d'or.");s.gold-=300;s.buildings++;log("🏗️ Habitat construit !");render()}
+function breed(){let a=+$("pa").value,b=+$("pb").value;if(a==b)return log("Choisis deux dragons différents.");if(s.breedEnd)return log("Un œuf est déjà en incubation.");s.breedEnd=Date.now()+15000;s.egg=false;log("❤️ Élevage lancé : 15 secondes.");render()}
+function hatch(){let a=s.dragons.find(x=>x.id==+$("pa").value),b=s.dragons.find(x=>x.id==+$("pb").value);let choices=C.filter(c=>c[1].includes(a.el)||c[1].includes(b.el));let c=choices[Math.floor(Math.random()*choices.length)];s.dragons.push({id:Date.now(),name:c[0],el:c[1],icon:c[2],atk:c[3],price:c[4],level:1,maxHp:110,hp:110});s.egg=false;log("🎉 Éclosion : "+c[0]+" !");render()}
+function newBattle(){let c=C[Math.floor(Math.random()*C.length)];s.enemyMax=100+c[3]*3;s.enemyHp=s.enemyMax;s.enemyName=c[0]+" sauvage";s.enemyIcon=c[2];s.enemyElement=c[1];s.team=[1,2,3].filter(id=>s.dragons.some(d=>d.id==id));while(s.team.length<Math.min(3,s.dragons.length))s.team.push(s.dragons[s.team.length].id);s.teamHp={};s.team.forEach(id=>s.teamHp[id]=100);s.turn=0;s.over=false;s.waiting=false;log("⚔️ "+s.enemyName+" apparaît !");render()}
+function attack(mult){if(s.over||s.waiting)return;let id=s.team[s.turn%s.team.length],d=s.dragons.find(x=>x.id==id);let dmg=Math.round((d.atk+Math.random()*7)*mult);s.enemyHp=Math.max(0,s.enemyHp-dmg);
+$("activeIcon").classList.remove("animAttack");void $("activeIcon").offsetWidth;$("activeIcon").classList.add("animAttack");
+$("enemyIcon").classList.remove("animHit");void $("enemyIcon").offsetWidth;$("enemyIcon").classList.add("animHit");
+log(d.icon+" "+d.name+" attaque : -"+dmg+" PV.");if(s.enemyHp<=0){s.gold+=150;s.food+=50;s.trophies+=10;s.over=true;log("🏆 Victoire ! +150 or, +50 nourriture, +10 trophées.");render();return}s.waiting=true;render();setTimeout(enemyTurn,700)}
+function enemyTurn(){let living=s.team.filter(id=>(s.teamHp[id]??0)>0);if(!living.length){s.over=true;log("💀 Ton équipe est vaincue.");render();return}let id=living[Math.floor(Math.random()*living.length)],d=s.dragons.find(x=>x.id==id),dmg=8+Math.floor(Math.random()*12);s.teamHp[id]=Math.max(0,(s.teamHp[id]??100)-dmg);
+$("enemyIcon").classList.remove("animEnemy");void $("enemyIcon").offsetWidth;$("enemyIcon").classList.add("animEnemy");
+$("activeIcon").classList.remove("animHit");void $("activeIcon").offsetWidth;$("activeIcon").classList.add("animHit");log("👹 "+s.enemyName+" attaque "+d.name+" : -"+dmg+" PV.");let after=s.team.filter(x=>(s.teamHp[x]??0)>0);if(!after.length){s.over=true;log("💀 Ton équipe est vaincue.");render();return}s.turn=(s.turn+1)%s.team.length;while((s.teamHp[s.team[s.turn]]??0)<=0)s.turn=(s.turn+1)%s.team.length;s.waiting=false;render()}
+function show(id,b){["home","collection","arena"].forEach(x=>$(x).classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active")}
+try{let old=JSON.parse(localStorage.getItem("DRv3"));if(old)s=old}catch(e){}if(!s.enemyName)newBattle();else render();setInterval(render,1000);
+</script></body></html>
